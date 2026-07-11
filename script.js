@@ -8,13 +8,59 @@ document.addEventListener('mousemove', (event) => {
   glow.style.top = `${event.clientY}px`;
 });
 
+// --- Music Player with Persistence ---
+const audio = new Audio('assets/music.mp3');
+audio.loop = true;
+
+const isPlaying = localStorage.getItem('musicPlaying') === 'true';
+const savedTime = localStorage.getItem('musicTime');
+if (savedTime) {
+  audio.currentTime = parseFloat(savedTime);
+}
+
 const musicBtn = $('#musicBtn');
+
+function updateMusicButtonUI() {
+  if (!musicBtn) return;
+  if (audio.paused) {
+    musicBtn.classList.remove('playing');
+    musicBtn.textContent = '♪';
+  } else {
+    musicBtn.classList.add('playing');
+    musicBtn.textContent = '♫';
+  }
+}
+
+if (isPlaying) {
+  audio.play().then(updateMusicButtonUI).catch(() => {
+    localStorage.setItem('musicPlaying', 'false');
+    updateMusicButtonUI();
+  });
+} else {
+  updateMusicButtonUI();
+}
+
 musicBtn?.addEventListener('click', () => {
-  musicBtn.classList.toggle('playing');
-  musicBtn.textContent = musicBtn.classList.contains('playing') ? '♫' : '♪';
+  if (audio.paused) {
+    audio.play().then(() => {
+      localStorage.setItem('musicPlaying', 'true');
+      updateMusicButtonUI();
+    }).catch(err => console.log("Audio play blocked by browser:", err));
+  } else {
+    audio.pause();
+    localStorage.setItem('musicPlaying', 'false');
+    updateMusicButtonUI();
+  }
 });
 
-const birthdayDate = new Date('2027-05-24T00:00:00').getTime();
+setInterval(() => {
+  if (!audio.paused) {
+    localStorage.setItem('musicTime', audio.currentTime);
+  }
+}, 1000);
+
+// --- Countdown timer for Disha ---
+const birthdayDate = new Date('2026-07-19T00:00:00').getTime();
 function updateCountdown() {
   const countdown = $('#countdown');
   if (!countdown) return;
@@ -138,12 +184,10 @@ const reasons = [
 
 const reasonGrid = $('#reasonGrid');
 if (reasonGrid) {
-  const imageFolder = reasonGrid.dataset.imageFolder || 'assets';
-  const reasonImages = Array.from({ length: 100 }, (_, index) => `${imageFolder}/${index + 1}.jpg`);
-
+  // Default elegant rose-gold / peach gradient.
+  // To display personal photos, copy them to assets/1.jpg, 2.jpg... and uncomment the url() reference below.
   reasonGrid.innerHTML = reasons
     .map((reason, index) => {
-      const image = reasonImages[index % reasonImages.length];
       return `
       <article class="reason-card reveal" tabindex="0">
         <div class="reason-inner">
@@ -151,7 +195,7 @@ if (reasonGrid) {
             <h3>${index + 1}</h3>
             <p>tap love note</p>
           </div>
-          <div class="reason-back" style="background-image: linear-gradient(to bottom, rgba(62,50,50,.08), rgba(62,50,50,.18) 45%, rgba(62,50,50,.78)), url('${image}');">
+          <div class="reason-back" style="background: linear-gradient(135deg, #e8cfc1 0%, #d8b4a0 100%);">
             <p>${reason}</p>
           </div>
         </div>
@@ -165,11 +209,28 @@ $('#randomReasonBtn')?.addEventListener('click', () => {
 });
 
 const envelope = $('#envelope');
-const letterText = `you are one of those rare people who make the world feel gentler just by being in it. Your presence brings a kind of warmth, peace, and beauty that words can never fully explain.
-On your birthday, I just want you to know how deeply you are loved, not just today, but every single day. You deserve happiness that feels real, dreams that slowly turn into reality, and moments so beautiful that your heart wants to keep them forever.
-I hope this year gives you soft mornings, peaceful nights, unexpected smiles, and every little thing your soul has been waiting for.
-Happy Birthday Babuuuuuuuuuuu You are special in ways you may never fully realize, and you deserve magic, love, and endless happiness in every chapter of your life. I Love You🫶`;
+const letterPaper = $('#letterPaper');
+const letterText = `Dear Disha,
+
+You are one of those rare people who make the world feel gentler just by being in it. Your presence brings a kind of warmth, peace, and beauty that words could never fully capture.
+
+Happy Birthday, Betu. 🤍
+
+On your birthday, I just want you to know how deeply you are loved, not just today but every single day. You deserve happiness that feels real, dreams that slowly blossom into reality, and moments so beautiful that your heart wants to hold onto them forever.
+
+I hope this year brings you soft mornings, peaceful nights, unexpected reasons to smile, and every little thing your heart has been quietly wishing for. May your days be filled with love, laughter, and countless little moments that remind you how wonderful you truly are.
+
+Always remember, Betu, you are iridescent. You have a beautiful way of bringing light wherever you go. Even during life's darkest moments, your light never fades. It only shines brighter. Never let the world make you forget how extraordinary you are.
+
+Thank you for being you. You make my world softer, exciting, brighter, and infinitely more beautiful just by being in it.
+
+Happy Birthday once again, Toodles. 🌸
+
+I love you. 🫶
+Always. In all ways. ❣️`;
+
 let hasTypedLetter = false;
+let typingInterval = null;
 
 envelope?.addEventListener('click', () => {
   envelope.classList.add('open');
@@ -178,11 +239,19 @@ envelope?.addEventListener('click', () => {
   hasTypedLetter = true;
   let index = 0;
   const typedLetter = $('#typedLetter');
-  const typing = setInterval(() => {
+  typingInterval = setInterval(() => {
     typedLetter.textContent += letterText[index] || '';
     index += 1;
-    if (index > letterText.length) clearInterval(typing);
-  }, 35);
+    if (index > letterText.length) clearInterval(typingInterval);
+  }, 25);
+});
+
+letterPaper?.addEventListener('click', () => {
+  if (envelope.classList.contains('open') && typingInterval) {
+    clearInterval(typingInterval);
+    const typedLetter = $('#typedLetter');
+    typedLetter.textContent = letterText;
+  }
 });
 
 const cake = $('#birthdayCake') || $('.cake');
@@ -213,10 +282,16 @@ cutCakeBtn?.addEventListener('click', async () => {
   cake.classList.add('sliced');
   await wait(900);
 
-  cakeStageText.textContent = 'first slice for my Babuuu 🎉';
+  cakeStageText.textContent = 'first slice for my betu 🎉';
   cutCakeBtn.textContent = 'Cake Cut 🎉';
 
   if (typeof confetti === 'function') {
     confetti({ particleCount: 280, spread: 115, origin: { y: 0.62 } });
+  }
+});
+
+cakeStageText?.addEventListener('click', () => {
+  if (typeof confetti === 'function') {
+    confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
   }
 });
