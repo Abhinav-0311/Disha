@@ -1443,6 +1443,79 @@ footer,
   }
 }
 
+/* --- Lock Modal Styles --- */
+.lock-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(18, 12, 12, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 1000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.lock-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.lock-modal-content {
+  padding: 40px 30px;
+  max-width: 420px;
+  width: 90%;
+  text-align: center;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+  transform: scale(0.9);
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.lock-modal.active .lock-modal-content {
+  transform: scale(1);
+}
+
+.lock-icon {
+  font-size: 3.5rem;
+  margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.lock-modal-content h2 {
+  font-family: 'Dancing Script', cursive;
+  font-size: 2.2rem;
+  color: var(--champagne);
+  margin-bottom: 12px;
+}
+
+.lock-modal-content p {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.8);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.lock-modal-content .lock-date {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--rose);
+  margin-bottom: 25px;
+  letter-spacing: 1px;
+}
+
+.lock-modal-content button {
+  min-width: 160px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

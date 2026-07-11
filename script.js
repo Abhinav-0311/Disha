@@ -1,6 +1,16 @@
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
+// --- Birthday Lock Logic ---
+const targetTime = new Date('2026-07-19T00:00:00').getTime();
+const isLocked = Date.now() < targetTime;
+const path = window.location.pathname;
+const isLandingPage = path === "/" || path.endsWith("/index.html") || path.endsWith("/index");
+
+if (isLocked && !isLandingPage) {
+  window.location.href = "index.html?locked=true";
+}
+
 const glow = $('.cursor-glow');
 document.addEventListener('mousemove', (event) => {
   if (!glow) return;
@@ -295,3 +305,69 @@ cakeStageText?.addEventListener('click', () => {
     confetti({ particleCount: 180, spread: 100, origin: { y: 0.6 } });
   }
 });
+
+// --- Birthday Lock Visual Cue & Handlers ---
+function showLockModal() {
+  let modal = document.getElementById('lock-modal');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'lock-modal';
+    modal.className = 'lock-modal';
+    modal.innerHTML = `
+      <div class="lock-modal-content glass">
+        <div class="lock-icon">🔒</div>
+        <h2>Patience, My Love! 🤍</h2>
+        <p>This part of your universe is locked until your birthday.</p>
+        <p class="lock-date">July 19, 2026</p>
+        <button class="btn primary" id="closeLockModal">Okay, I'll wait! 🥰</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    
+    // Close button
+    document.getElementById('closeLockModal').addEventListener('click', () => {
+      modal.classList.remove('active');
+    });
+    
+    // Click outside to close
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+      }
+    });
+  }
+  
+  // Trigger active class
+  setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function initLockHandlers() {
+  if (!isLocked) return;
+
+  // Add lock styling and handlers to navbar and action buttons
+  const lockedLinks = $$('.nav-links a, .hero-actions a');
+  lockedLinks.forEach(link => {
+    const href = link.getAttribute('href');
+    if (href === 'index.html' || href === '/' || href === '#') return;
+
+    link.style.cursor = 'not-allowed';
+    
+    // Add lock icon inside nav links for visual cue
+    if (link.parentElement.classList.contains('nav-links')) {
+      link.innerHTML += ' <span style="font-size: 0.8rem; vertical-align: middle;">🔒</span>';
+    }
+
+    link.addEventListener('click', (e) => {
+      e.preventDefault();
+      showLockModal();
+    });
+  });
+
+  // Check if redirected from a locked page
+  if (window.location.search.includes('locked=true')) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showLockModal();
+  }
+}
+
+initLockHandlers();
