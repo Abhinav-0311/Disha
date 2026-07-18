@@ -259,10 +259,7 @@ button {
 .polaroid {
   break-inside: avoid;
   margin-bottom: 24px;
-  padding: 14px 14px 22px;
-  background: #fff;
-  border-radius: 24px;
-  box-shadow: 0 20px 55px rgba(62, 50, 50, 0.14);
+  perspective: 1000px;
   transform: rotate(-1deg);
   transition: 0.35s;
 }
@@ -275,10 +272,75 @@ button {
   transform: translateY(-8px) rotate(0);
 }
 
+.polaroid-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.polaroid.flipped .polaroid-inner {
+  transform: rotateY(180deg);
+}
+
+.polaroid-front,
+.polaroid-back {
+  background: #fff;
+  border-radius: 24px;
+  box-shadow: 0 20px 55px rgba(62, 50, 50, 0.14);
+  padding: 14px 14px 22px;
+  box-sizing: border-box;
+  width: 100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.polaroid-front {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+}
+
+.polaroid-back {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  transform: rotateY(180deg);
+  z-index: 1;
+  background: #fffdf9; /* warm ivory paper color */
+  background-image: 
+    linear-gradient(rgba(242, 204, 195, 0.35) 1px, transparent 1px);
+  background-size: 100% 28px; /* lined paper effect */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 24px;
+  border: 1px solid rgba(242, 204, 195, 0.2);
+}
+
+.back-content {
+  text-align: center;
+}
+
+.back-content .message-text {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.6rem;
+  color: #5a4b41;
+  line-height: 1.65;
+  margin: 0;
+}
+
 .photo {
   height: 350px;
   border-radius: 18px;
   background: linear-gradient(135deg, var(--rose), var(--champagne)) center top/cover no-repeat;
+  overflow: hidden;
 }
 .photo video {
   width: 100%;
@@ -1443,6 +1505,348 @@ footer,
   }
 }
 
+/* --- The Secret Garden Theme & Cassette Styles --- */
+.garden-theme {
+  background: 
+    linear-gradient(135deg, rgba(18, 33, 25, 0.82), rgba(37, 18, 28, 0.82), rgba(22, 14, 16, 0.82)),
+    url('assets/garden_bg.png') center/cover no-repeat fixed;
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.garden-theme::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 15% 25%, rgba(224, 86, 114, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(242, 204, 195, 0.16) 0%, transparent 45%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, transparent 55%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.garden-particles {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.petal {
+  position: absolute;
+  background-color: var(--rose);
+  border-radius: 150% 0 150% 150%;
+  opacity: 0;
+  transform: rotate(0deg);
+  animation: floatPetal 12s linear infinite;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.petal.white-rose {
+  background-color: #fbf5f3;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.petal.red-rose {
+  background-color: #ba2d49;
+}
+
+@keyframes floatPetal {
+  0% {
+    transform: translateY(105vh) translateX(0) rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  10% {
+    opacity: 0.55;
+  }
+  90% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-10vh) translateX(120px) rotate(420deg) scale(1.1);
+    opacity: 0;
+  }
+}
+
+.garden-page {
+  padding: 120px 6% 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  box-sizing: border-box;
+  z-index: 1;
+  position: relative;
+}
+
+.garden-header {
+  text-align: center;
+  max-width: 580px;
+  margin-bottom: 25px;
+}
+
+.garden-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.5rem;
+  color: var(--champagne);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-top: 5px;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+}
+
+.garden-desc {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.55;
+  margin-top: 12px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.cassette-container {
+  max-width: 480px;
+  width: 90%;
+  margin: 20px auto 0;
+  padding: 35px 25px 25px;
+  border-radius: 30px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cassette {
+  width: 100%;
+  max-width: 350px;
+  height: 215px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 
+    0 20px 45px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  box-sizing: border-box;
+}
+
+.cassette-sticker {
+  width: 100%;
+  height: 65px;
+  background: linear-gradient(135deg, rgba(242, 204, 195, 0.95), rgba(224, 86, 114, 0.95));
+  border-radius: 8px;
+  padding: 8px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.cassette-sticker::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  border: 1px dashed rgba(18, 12, 12, 0.15);
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.label-line {
+  width: 85%;
+  height: 1px;
+  border-top: 1px dashed rgba(18, 12, 12, 0.2);
+  margin-bottom: 2px;
+}
+
+.label-title {
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.7rem;
+  font-weight: 700;
+  color: #120c0c;
+  letter-spacing: 0.5px;
+}
+
+.cassette-window {
+  width: 65%;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 12px 0;
+  position: relative;
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.55);
+}
+
+.window-inner {
+  width: 90%;
+  height: 80%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.reel {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 3px dotted rgba(255, 255, 255, 0.35);
+  position: relative;
+  background: #161616;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.1);
+}
+
+.spoke {
+  position: absolute;
+  width: 100%;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.spoke:nth-child(2) {
+  transform: rotate(60deg);
+}
+
+.spoke:nth-child(3) {
+  transform: rotate(120deg);
+}
+
+.reel.spinning {
+  animation: spinReel 2.5s linear infinite;
+}
+
+@keyframes spinReel {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.tape-roll {
+  width: 60px;
+  height: 8px;
+  background: rgba(43, 31, 23, 0.65);
+  border-radius: 2px;
+  box-shadow: 0 0 2px rgba(0,0,0,0.8);
+}
+
+.cassette-trapezoid {
+  width: 48%;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.08);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px 6px 0 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.05);
+}
+
+.cassette-btn {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--rose);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  font-size: 0.72rem;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  padding: 0;
+  outline: none;
+}
+
+.cassette-btn:hover {
+  transform: scale(1.12);
+  background: var(--champagne);
+  color: #120c0c;
+}
+
+.cassette-btn:active {
+  transform: scale(0.95);
+}
+
+.btn-play {
+  margin-left: 2px; /* nudge slightly for alignment */
+}
+
+.cassette-status {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.15rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.82);
+  margin-top: 18px;
+  letter-spacing: 0.5px;
+  transition: color 0.3s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.cassette-status.playing {
+  color: var(--champagne);
+}
+
+/* Mobile responsive fixes for garden */
+@media (max-width: 480px) {
+  .garden-header h1 {
+    font-size: 2.5rem;
+  }
+  
+  .cassette {
+    height: 190px;
+    padding: 10px;
+  }
+  
+  .cassette-sticker {
+    height: 55px;
+  }
+  
+  .label-title {
+    font-size: 1.4rem;
+  }
+  
+  .cassette-window {
+    height: 38px;
+    margin: 8px 0;
+  }
+  
+  .reel {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .tape-roll {
+    width: 45px;
+  }
+}
+
+
 /* --- Lock Modal Styles --- */
 .lock-modal {
   position: fixed;
@@ -1514,6 +1918,379 @@ footer,
 
 .lock-modal-content button {
   min-width: 160px;
+}
+
+/* --- Wishes Light Curtain Theme & Styles --- */
+.wishes-theme {
+  background: linear-gradient(135deg, #100d11, #1e131d, #140d10);
+  min-height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.wishes-theme::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle at 50% 10%, rgba(255, 210, 117, 0.08) 0%, transparent 60%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* --- Bokeh Glowing Background --- */
+.bokeh-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  overflow: hidden;
+}
+
+.bokeh-dot {
+  position: absolute;
+  background: radial-gradient(circle, rgba(255, 210, 117, 0.28) 0%, rgba(255, 210, 117, 0) 70%);
+  border-radius: 50%;
+  pointer-events: none;
+  animation: float-bokeh ease-in-out infinite;
+}
+
+@keyframes float-bokeh {
+  0% {
+    transform: translateY(105vh) scale(0.7);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.65;
+  }
+  85% {
+    opacity: 0.65;
+  }
+  100% {
+    transform: translateY(-10vh) scale(1.3);
+    opacity: 0;
+  }
+}
+
+/* --- Horizontal Fairy Lights Wire --- */
+.horizontal-wire {
+  width: 100%;
+  max-width: 950px;
+  height: 30px;
+  position: relative;
+  margin-bottom: -15px;
+  z-index: 8;
+}
+
+.wire-line {
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 210, 117, 0.25);
+  box-shadow: 0 0 10px rgba(255, 210, 117, 0.1);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.wire-bulbs {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+}
+
+.horizontal-wire .bulb {
+  animation: twinkle-horizontal 1.6s ease-in-out infinite alternate;
+}
+
+.horizontal-wire .bulb:nth-child(even) {
+  animation-delay: 0.3s;
+  animation-duration: 2.1s;
+}
+
+@keyframes twinkle-horizontal {
+  0% {
+    opacity: 0.5;
+    box-shadow: 0 0 5px #ffd700, 0 0 10px #ffae00;
+  }
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 12px #ffd700, 0 0 22px #ffa600;
+  }
+}
+
+/* --- Sideways Photo Correction --- */
+.photo {
+  position: relative;
+}
+
+.photo-src {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 12px;
+}
+
+.photo-src.rotate-counter {
+  transform: rotate(-90deg) scale(1.16);
+}
+
+.wishes-page {
+  padding: 120px 4% 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  box-sizing: border-box;
+  z-index: 1;
+  position: relative;
+}
+
+.wishes-header {
+  text-align: center;
+  max-width: 600px;
+  margin-bottom: 30px;
+}
+
+.wishes-header h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 3.5rem;
+  color: var(--champagne);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-top: 5px;
+  text-shadow: 0 4px 15px rgba(0, 0, 0, 0.45);
+}
+
+.wishes-header p {
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.55;
+  margin-top: 12px;
+}
+
+.light-curtain {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 950px;
+  height: 950px;
+  position: relative;
+  margin-top: 10px;
+}
+
+.light-string {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  width: 2px;
+  height: 100%;
+  background: rgba(255, 210, 117, 0.15);
+  box-shadow: 0 0 8px rgba(255, 210, 117, 0.05);
+  position: relative;
+}
+
+.bulb {
+  width: 8px;
+  height: 8px;
+  background: #ffd700;
+  border-radius: 50%;
+  box-shadow: 0 0 10px #ffd700, 0 0 20px #ffae00;
+  position: relative;
+  z-index: 2;
+  animation: twinkle 1.5s ease-in-out infinite alternate;
+}
+
+.light-string:nth-child(2) .bulb {
+  animation-delay: 0.4s;
+  animation-duration: 1.8s;
+}
+
+.light-string:nth-child(3) .bulb {
+  animation-delay: 0.8s;
+  animation-duration: 1.3s;
+}
+
+@keyframes twinkle {
+  0% {
+    opacity: 0.4;
+    filter: brightness(0.8);
+    box-shadow: 0 0 6px #ffd700, 0 0 12px #ffae00;
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1.2);
+    box-shadow: 0 0 14px #ffd700, 0 0 25px #ffa600, 0 0 35px #ff8c00;
+  }
+}
+
+.polaroid-wrapper {
+  position: relative;
+  z-index: 5;
+  margin: 10px 0;
+  transition: transform 0.3s ease;
+}
+
+.polaroid-wrapper:hover {
+  transform: scale(1.05) rotate(0deg) !important;
+  z-index: 10;
+}
+
+.peg {
+  width: 10px;
+  height: 28px;
+  background: #cba87c;
+  border-radius: 2px;
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 12;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+  border: 1px solid #aa875b;
+}
+
+.peg::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 3px;
+  width: 4px;
+  height: 4px;
+  background: #88653a;
+  border-radius: 50%;
+}
+
+.wishes-card {
+  width: 250px; /* Sized up equally to fit text comfortably */
+  height: auto;
+}
+
+.wishes-card .polaroid-front,
+.wishes-card .polaroid-back {
+  padding: 10px 10px 14px;
+  border-radius: 18px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.wishes-card .photo {
+  height: 255px; /* Sized up equally */
+  border-radius: 12px;
+}
+
+.wishes-card p {
+  font-size: 0.95rem;
+  margin-top: 10px;
+  margin-bottom: 2px;
+  font-family: 'Dancing Script', cursive;
+  font-weight: 600;
+}
+
+.wishes-card .polaroid-back {
+  padding: 20px 15px;
+  background: #fffdf9;
+  background-image: linear-gradient(rgba(242, 204, 195, 0.3) 1px, transparent 1px);
+  background-size: 100% 24px;
+  overflow-y: auto;
+  scrollbar-width: none; /* Hide scrollbar Firefox */
+}
+
+.wishes-card .polaroid-back::-webkit-scrollbar {
+  display: none; /* Hide scrollbar Chrome/Safari */
+}
+
+.wishes-card .back-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.wishes-card .back-content .message-text {
+  font-size: 1.15rem;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+.wishes-card .back-content .message-text.long-message {
+  font-size: 0.82rem;
+  line-height: 1.4;
+  font-weight: 500;
+  color: #4b3d35;
+}
+
+.drive-link-btn {
+  display: inline-block;
+  background: var(--rose);
+  color: #fff !important;
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-top: 12px;
+  box-shadow: 0 4px 12px rgba(224, 86, 114, 0.3);
+  transition: all 0.3s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.drive-link-btn:hover {
+  background: var(--champagne);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px rgba(242, 204, 195, 0.4);
+}
+
+/* Mobile curtain layout fixes */
+@media (max-width: 768px) {
+  .light-curtain {
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    gap: 50px;
+    padding-top: 20px;
+  }
+  
+  .light-string {
+    width: 2px;
+    height: auto;
+    flex-direction: column;
+    background: rgba(255, 210, 117, 0.15);
+    box-shadow: 0 0 8px rgba(255, 210, 117, 0.05);
+    padding: 20px 0;
+    box-sizing: border-box;
+    justify-content: flex-start;
+    gap: 30px;
+  }
+  
+  .bulb {
+    margin: 15px auto;
+  }
+  
+  .polaroid-wrapper {
+    margin: 15px 0;
+  }
+  
+  .wishes-card {
+    width: 250px; /* Keep full polaroid width on mobile! */
+  }
+  
+  .wishes-card .photo {
+    height: 255px; /* Keep photo tall on mobile! */
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

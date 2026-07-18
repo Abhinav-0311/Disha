@@ -4,11 +4,27 @@ const $$ = (selector) => document.querySelectorAll(selector);
 // --- Birthday Lock Logic ---
 const targetTime = new Date('2026-07-19T00:00:00').getTime();
 const isLocked = Date.now() < targetTime;
+const isBypass = window.location.search.includes('bypass=true');
 const path = window.location.pathname;
 const isLandingPage = path === "/" || path.endsWith("/index.html") || path.endsWith("/index");
 
-if (isLocked && !isLandingPage) {
+if (isLocked && !isLandingPage && !isBypass) {
   window.location.href = "index.html?locked=true";
+}
+
+if (isBypass) {
+  const propagateBypass = () => {
+    const links = document.querySelectorAll('a');
+    links.forEach(link => {
+      const href = link.getAttribute('href');
+      if (href && href !== '#' && !href.startsWith('http') && !href.startsWith('mailto') && !href.includes('bypass=true')) {
+        const separator = href.includes('?') ? '&' : '?';
+        link.setAttribute('href', `${href}${separator}bypass=true`);
+      }
+    });
+  };
+  propagateBypass();
+  document.addEventListener('DOMContentLoaded', propagateBypass);
 }
 
 const glow = $('.cursor-glow');
@@ -342,10 +358,10 @@ function showLockModal() {
 }
 
 function initLockHandlers() {
-  if (!isLocked) return;
+  if (!isLocked || isBypass) return;
 
-  // Add lock styling and handlers to navbar and action buttons
-  const lockedLinks = $$('.nav-links a, .hero-actions a');
+  // Add lock styling and handlers to navbar, action buttons, and garden buttons
+  const lockedLinks = $$('.nav-links a, .hero-actions a, .garden-btn');
   lockedLinks.forEach(link => {
     const href = link.getAttribute('href');
     if (href === 'index.html' || href === '/' || href === '#') return;
@@ -371,3 +387,157 @@ function initLockHandlers() {
 }
 
 initLockHandlers();
+
+// --- Secret Garden Cassette Player ---
+const voiceAudio = $('#voiceAudio');
+const cassetteBtn = $('#cassetteBtn');
+const leftReel = $('#leftReel');
+const rightReel = $('#rightReel');
+const cassetteStatus = $('#cassetteStatus');
+
+if (cassetteBtn && voiceAudio) {
+  let fadeInterval;
+
+  function fadeAudio(targetVolume, duration = 1200) {
+    clearInterval(fadeInterval);
+    const startVolume = audio.volume;
+    const steps = 25;
+    const stepTime = duration / steps;
+    const volumeStep = (targetVolume - startVolume) / steps;
+    let currentStep = 0;
+
+    fadeInterval = setInterval(() => {
+      currentStep++;
+      audio.volume = Math.max(0, Math.min(1, startVolume + (volumeStep * currentStep)));
+      if (currentStep >= steps) {
+        clearInterval(fadeInterval);
+        audio.volume = targetVolume;
+      }
+    }, stepTime);
+  }
+
+  function playCassette() {
+    voiceAudio.play().then(() => {
+      // Duck background music
+      fadeAudio(0.1, 1200);
+      
+      // Visual state
+      leftReel.classList.add('spinning');
+      rightReel.classList.add('spinning');
+      cassetteBtn.querySelector('.btn-play').style.display = 'none';
+      cassetteBtn.querySelector('.btn-pause').style.display = 'inline';
+      cassetteStatus.textContent = 'Playing voice message... 🎧';
+      cassetteStatus.classList.add('playing');
+    }).catch(err => {
+      console.log("Audio play blocked:", err);
+    });
+  }
+
+  function pauseCassette() {
+    voiceAudio.pause();
+    // Fade background music back up
+    fadeAudio(1.0, 1200);
+    
+    // Visual state
+    leftReel.classList.remove('spinning');
+    rightReel.classList.remove('spinning');
+    cassetteBtn.querySelector('.btn-play').style.display = 'inline';
+    cassetteBtn.querySelector('.btn-pause').style.display = 'none';
+    cassetteStatus.textContent = 'Voice message paused.';
+    cassetteStatus.classList.remove('playing');
+  }
+
+  cassetteBtn.addEventListener('click', () => {
+    if (voiceAudio.paused) {
+      playCassette();
+    } else {
+      pauseCassette();
+    }
+  });
+
+  voiceAudio.addEventListener('ended', () => {
+    pauseCassette();
+    cassetteStatus.textContent = 'Voice message ended. 🤍';
+  });
+}
+
+// --- Floating Rose Petals Generator ---
+const particlesContainer = $('#gardenParticles');
+if (particlesContainer) {
+  const petalColors = ['white-rose', 'red-rose', '']; // empty string is default (rose pink)
+  
+  function createPetal() {
+    const petal = document.createElement('div');
+    petal.className = `petal ${petalColors[Math.floor(Math.random() * petalColors.length)]}`;
+    
+    // Randomize size, starting horizontal position, animation duration and delay
+    const startLeft = Math.random() * 100;
+    const size = Math.random() * 14 + 12; // 12px to 26px
+    const animDuration = Math.random() * 6 + 9; // 9s to 15s
+    const startDelay = Math.random() * 4;
+    
+    petal.style.left = `${startLeft}vw`;
+    petal.style.width = `${size}px`;
+    petal.style.height = `${size}px`;
+    petal.style.animationDuration = `${animDuration}s`;
+    petal.style.animationDelay = `${startDelay}s`;
+    
+    particlesContainer.appendChild(petal);
+    
+    // Clean up petal after animation
+    setTimeout(() => {
+      petal.remove();
+    }, (animDuration + startDelay) * 1000);
+  }
+
+  // Seed initial batch of floating petals
+  for (let i = 0; i < 15; i++) {
+    createPetal();
+  }
+  
+  // Spawn more petals at intervals
+  setInterval(createPetal, 800);
+}
+
+// --- Memories Card Flip ---
+const polaroids = $$('.polaroid');
+polaroids.forEach(card => {
+  card.addEventListener('click', () => {
+    card.classList.toggle('flipped');
+  });
+});
+
+// --- Wishes Page Bokeh Light Generator ---
+const bokehContainer = $('#bokehContainer');
+if (bokehContainer) {
+  function createBokeh() {
+    const dot = document.createElement('div');
+    dot.className = 'bokeh-dot';
+    const size = Math.random() * 25 + 10; // 10px to 35px
+    const startLeft = Math.random() * 100;
+    const startTop = Math.random() * 90;
+    const animDuration = Math.random() * 8 + 8; // 8s to 16s
+    const delay = Math.random() * 5;
+    
+    dot.style.left = `${startLeft}vw`;
+    dot.style.top = `${startTop}vh`;
+    dot.style.width = `${size}px`;
+    dot.style.height = `${size}px`;
+    dot.style.animationDuration = `${animDuration}s`;
+    dot.style.animationDelay = `${delay}s`;
+    
+    bokehContainer.appendChild(dot);
+    
+    setTimeout(() => {
+      dot.remove();
+    }, (animDuration + delay) * 1000);
+  }
+
+  // Seed initial dots
+  for (let i = 0; i < 22; i++) {
+    createBokeh();
+  }
+  
+  // Continuously spawn dots
+  setInterval(createBokeh, 900);
+}

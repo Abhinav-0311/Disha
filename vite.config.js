@@ -11,6 +11,8 @@ export default defineConfig({
         letter: resolve(__dirname, 'letter.html'),
         memories: resolve(__dirname, 'memories.html'),
         reasons: resolve(__dirname, 'reasons.html'),
+        garden: resolve(__dirname, 'garden.html'),
+        wishes: resolve(__dirname, 'wishes.html'),
       },
     },
   },

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Secret Garden | Disha</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Dancing+Script:wght@500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="garden-theme">
+  <div class="cursor-glow"></div>
+  <div class="garden-particles" id="gardenParticles"></div>
+
+  <nav class="navbar glass">
+    <a href="index.html" class="logo">Disha</a>
+    <div class="nav-links">
+      <a href="memories.html">Memories</a>
+      <a href="reasons.html">Reasons</a>
+      <a href="wishes.html">Wishes</a>
+      <a href="letter.html">Letter</a>
+      <a href="cake.html">Cake</a>
+      <a href="final.html">Final</a>
+    </div>
+  </nav>
+
+  <main class="garden-page reveal">
+    <header class="garden-header">
+      <p class="script-text">our quiet place</p>
+      <h1>The Secret Garden</h1>
+      <p class="garden-desc">A space filled with roses and a small voice note meant just for you. Click play to listen.</p>
+    </header>
+
+    <div class="cassette-container glass">
+      <div class="cassette">
+        <!-- Top sticker and label -->
+        <div class="cassette-sticker">
+          <div class="label-line"></div>
+          <div class="label-title">Play Me</div>
+        </div>
+
+        <!-- Center reels window -->
+        <div class="cassette-window">
+          <div class="window-inner">
+            <div class="reel" id="leftReel">
+              <div class="spoke"></div>
+              <div class="spoke"></div>
+              <div class="spoke"></div>
+            </div>
+            <div class="tape-roll" id="tapeRoll"></div>
+            <div class="reel" id="rightReel">
+              <div class="spoke"></div>
+              <div class="spoke"></div>
+              <div class="spoke"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom cassette controls and trapezoid cut -->
+        <div class="cassette-trapezoid">
+          <button class="cassette-btn" id="cassetteBtn" aria-label="Play Voice Message">
+            <span class="btn-play">▶</span>
+            <span class="btn-pause" style="display: none;">■</span>
+          </button>
+        </div>
+      </div>
+      <p class="cassette-status" id="cassetteStatus">Press play to listen... 🎧</p>
+    </div>
+
+    <audio id="voiceAudio" src="assets/voice.mp3" preload="auto"></audio>
+  </main>
+
+  <script type="module" src="script.js"></script>
+</body>
+</html>
